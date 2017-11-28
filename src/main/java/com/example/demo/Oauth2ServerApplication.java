@@ -5,6 +5,8 @@ import java.security.Principal;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,7 +83,12 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RestController
-public class Oauth2ServerApplication {
+public class Oauth2ServerApplication extends AuthorizationServerConfigurerAdapter  {
+	 public static final String OAUTH_CLIENT_ID = "oauth_client";  
+	    public static final String OAUTH_CLIENT_SECRET = "oauth_client_secret";  
+	    public static final String RESOURCE_ID = "my_resource_id";  
+	    public static final String[] SCOPES = { "read", "write" }; 
+	
 	@GetMapping("/user")
 	public Principal user(Principal user) {
 		return user;
@@ -89,4 +96,19 @@ public class Oauth2ServerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(Oauth2ServerApplication.class, args);
 	}
+	
+	@Override
+    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        clients.inMemory()  
+        .withClient(OAUTH_CLIENT_ID)  
+        .secret(OAUTH_CLIENT_SECRET)  
+        .resourceIds(RESOURCE_ID)  
+        .scopes(SCOPES)  
+        .authorities("ROLE_USER")  
+        .authorizedGrantTypes("authorization_code", "refresh_token")  
+        .accessTokenValiditySeconds(60*30) // 30min  
+        .refreshTokenValiditySeconds(60*60*24); // 24h  
+    }
+	
+	
 }
