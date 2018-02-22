@@ -110,7 +110,7 @@ public class Oauth2ServerApplication extends AuthorizationServerConfigurerAdapte
         .resourceIds(RESOURCE_ID)  
         .scopes(SCOPES)  
         .authorities("ROLE_USER")  
-        .authorizedGrantTypes("authorization_code", "refresh_token")  
+        .authorizedGrantTypes("authorization_code", "refresh_token","password")  
         .accessTokenValiditySeconds(60*30) // 30min  
         .refreshTokenValiditySeconds(60*60*24); // 24h  
     }
